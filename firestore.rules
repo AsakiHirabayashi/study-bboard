@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 参加コードの SHA-256 ハッシュを roomId として使用
+    match /rooms/{roomId}/posts/{postId} {
+      allow read: if roomId.matches('^[a-f0-9]{64}$');
+
+      allow create: if roomId.matches('^[a-f0-9]{64}$')
+        && request.resource.data.keys().hasOnly(
+          ['displayName', 'text', 'clientId', 'createdAt']
+        )
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.displayName.size() <= 16
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 2000
+        && request.resource.data.clientId is string
+        && request.resource.data.clientId.size() > 0
+        && request.resource.data.clientId.size() <= 64
+        && request.resource.data.createdAt == request.time;
+
+      allow update, delete: if false;
+    }
+  }
+}
