@@ -12,7 +12,7 @@ import {
 import { getDb } from "./firebase";
 
 export function mapFirestoreError(error: unknown): string {
-  if (error instanceof Error) {
+  if (error && typeof error === "object" && "code" in error) {
     if (error.code === "permission-denied") {
       return "Firestore の権限がありません。Firebase コンソールで firestore.rules を公開してください。";
     }
