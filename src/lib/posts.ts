@@ -12,16 +12,21 @@ import {
 import { getDb } from "./firebase";
 
 export function mapFirestoreError(error: unknown): string {
-  if (error && typeof error === "object" && "code" in error) {
-    if (error.code === "permission-denied") {
-      return "Firestore の権限がありません。Firebase コンソールで firestore.rules を公開してください。";
-    }
-    if (error.code === "unavailable") {
-      return "Firestore に接続できません。ネットワークを確認してください。";
-    }
-    return error.message;
+  const code =
+    error && typeof error === "object" && "code" in error
+      ? String(error.code)
+      : "";
+
+  if (code === "permission-denied") {
+    return "Firestore の権限がありません。Firebase コンソールで firestore.rules を公開してください。";
   }
+
+  if (code === "unavailable") {
+    return "Firestore に接続できません。ネットワークを確認してください。";
+  }
+
   if (error instanceof Error) return error.message;
+
   return "不明なエラーが発生しました。";
 }
 
