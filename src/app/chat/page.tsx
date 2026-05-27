@@ -174,20 +174,22 @@ export default function BoardPage() {
                     borderColor: cardColors.borderColor,
                   }}
                 >
-                  <div className="flex items-baseline justify-between gap-2 mb-2">
-                    <span className="text-xs font-medium text-[#404040]">{p.displayName}</span>
-                    <time className="text-[11px] text-[var(--muted)] tabular-nums shrink-0">
-                      {formatPostTime(p.createdAt)}
-                    </time>
-                    
-  <button
-    onClick={() => deletePost(p.id)}
-    className="mt-2 text-xs text-red-500 hover:underline"
-  >
-    削除
-  </button>
+                <div className="flex items-baseline justify-between gap-2 mb-2">
+  <span>{p.displayName}</span>
 
-                  </div>
+  <div>
+    <time>
+      {formatPostTime(p.createdAt)}
+    </time>
+
+    <button
+      onClick={() => deletePost(p.id)}
+      className="mt-2 text-xs text-red-500 hover:underline"
+    >
+      削除
+    </button>
+  </div>
+</div>
                   <p className="text-sm text-[#171717] leading-relaxed whitespace-pre-wrap break-words">
                     {p.text}
                   </p>
