@@ -163,7 +163,7 @@ export default function BoardPage() {
             )}
 
             {posts.map((p) => {
-              const isMine = p.clientId === clientId;
+              const isMine = true;
               const cardColors = getAuthorCardColors(p.clientId, isMine);
               return (
                 <article
