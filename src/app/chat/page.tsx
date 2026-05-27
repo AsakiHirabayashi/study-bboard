@@ -179,14 +179,14 @@ export default function BoardPage() {
                     <time className="text-[11px] text-[var(--muted)] tabular-nums shrink-0">
                       {formatPostTime(p.createdAt)}
                     </time>
-                    {isMine && (
+                    
   <button
     onClick={() => deletePost(p.id)}
     className="mt-2 text-xs text-red-500 hover:underline"
   >
     削除
   </button>
-)}
+
                   </div>
                   <p className="text-sm text-[#171717] leading-relaxed whitespace-pre-wrap break-words">
                     {p.text}
