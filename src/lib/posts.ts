@@ -1,6 +1,8 @@
 import {
   FirestoreError,
   Timestamp,
+  deleteDoc,
+  doc,
   addDoc,
   collection,
   limit,
@@ -97,3 +99,9 @@ export function formatPostTime(ts: Timestamp | null | undefined): string {
     minute: "2-digit",
   });
 }
+
+  export async function deletePost(id: string) {
+    const db = getDb();
+  
+    await deleteDoc(doc(db, "posts", id));
+  }
