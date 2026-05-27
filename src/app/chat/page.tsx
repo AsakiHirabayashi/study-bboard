@@ -11,11 +11,12 @@ import {
   type Post,
 } from "@/lib/posts";
 import { getAuthorCardColors } from "@/lib/authorColor";
+import { clampNickname, getActiveNickname } from "@/lib/nickname";
 import { getClientId, joinCodeToRoomId } from "@/lib/room";
 
 export default function BoardPage() {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState("");
+  const [nickname, setNickname] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [roomId, setRoomId] = useState<string | null>(null);
   const [clientId, setClientId] = useState("");
@@ -27,13 +28,13 @@ export default function BoardPage() {
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const n = sessionStorage.getItem("sb_name") ?? sessionStorage.getItem("hc_name") ?? "";
+    const n = clampNickname(getActiveNickname());
     const c = sessionStorage.getItem("sb_code") ?? sessionStorage.getItem("hc_pass") ?? "";
-    if (!n.trim() || !c.trim()) {
+    if (!n || !c.trim()) {
       router.replace("/");
       return;
     }
-    setDisplayName(n);
+    setNickname(n);
     setJoinCode(c);
     setClientId(getClientId());
   }, [router]);
@@ -87,13 +88,13 @@ export default function BoardPage() {
 
   async function submit() {
     const t = text.replace(/\s+/g, " ").trim();
-    if (!t || !roomId || isSending) return;
+    if (!t || !roomId || isSending || !nickname) return;
 
     setIsSending(true);
     try {
       await sendPost({
         roomId,
-        displayName: displayName || "匿名",
+        displayName: nickname,
         text: t,
         clientId,
       });
@@ -133,7 +134,7 @@ export default function BoardPage() {
             </div>
 
             <div className="shrink-0 text-xs text-[#525252] border border-[var(--border)] rounded px-2.5 py-1 bg-[var(--muted-bg)]">
-              {displayName || "表示名なし"}
+              {nickname}
             </div>
           </div>
         </header>

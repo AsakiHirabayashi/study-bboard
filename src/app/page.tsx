@@ -1,25 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { clampNickname, getStoredNickname, saveNickname } from "@/lib/nickname";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-
-function clampName(input: string) {
-  return input.replace(/\s+/g, " ").trim().slice(0, 16);
-}
 
 export default function Home() {
   const router = useRouter();
   const [joinCode, setJoinCode] = useState("");
-  const [displayName, setDisplayName] = useState("");
+  const [nickname, setNickname] = useState("");
+
+  useEffect(() => {
+    const saved = getStoredNickname();
+    if (saved) setNickname(saved);
+  }, []);
 
   const canEnter = useMemo(() => {
-    return joinCode.trim().length >= 2 && clampName(displayName).length >= 1;
-  }, [joinCode, displayName]);
+    return joinCode.trim().length >= 2 && clampNickname(nickname).length >= 1;
+  }, [joinCode, nickname]);
 
   function onEnter() {
-    const safeName = clampName(displayName);
-    if (!safeName || joinCode.trim().length < 2) return;
-    sessionStorage.setItem("sb_name", safeName);
+    const safeNickname = clampNickname(nickname);
+    if (!safeNickname || joinCode.trim().length < 2) return;
+    saveNickname(safeNickname);
     sessionStorage.setItem("sb_code", joinCode.trim());
     router.push("/chat");
   }
@@ -40,11 +42,26 @@ export default function Home() {
           <div className="border-b border-[var(--border)] px-5 py-4">
             <h2 className="text-sm font-medium text-[#171717]">ボードに参加</h2>
             <p className="mt-1 text-xs text-[var(--muted)]">
-              表示名と参加コードを入力してください。
+              ニックネームと参加コードを入力してください。
             </p>
           </div>
 
           <div className="px-5 py-5 space-y-4">
+            <label className="block">
+              <span className="text-xs font-medium text-[#404040]">ニックネーム</span>
+              <input
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                inputMode="text"
+                autoComplete="nickname"
+                placeholder="例：山田 太郎"
+                className="mt-1.5 w-full rounded border border-[var(--border)] bg-white px-3 py-2.5 text-sm text-[#171717] outline-none placeholder:text-[#a3a3a3] focus:border-[var(--border-strong)] focus:ring-1 focus:ring-[#d4d4d4]"
+              />
+              <span className="mt-1 block text-xs text-[var(--muted)]">
+                最大16文字・次回アクセス時に自動入力されます
+              </span>
+            </label>
+
             <label className="block">
               <span className="text-xs font-medium text-[#404040]">参加コード</span>
               <input
@@ -55,19 +72,6 @@ export default function Home() {
                 placeholder="例：team-alpha-2026"
                 className="mt-1.5 w-full rounded border border-[var(--border)] bg-white px-3 py-2.5 text-sm text-[#171717] outline-none placeholder:text-[#a3a3a3] focus:border-[var(--border-strong)] focus:ring-1 focus:ring-[#d4d4d4]"
               />
-            </label>
-
-            <label className="block">
-              <span className="text-xs font-medium text-[#404040]">表示名</span>
-              <input
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                inputMode="text"
-                autoComplete="off"
-                placeholder="例：山田 太郎"
-                className="mt-1.5 w-full rounded border border-[var(--border)] bg-white px-3 py-2.5 text-sm text-[#171717] outline-none placeholder:text-[#a3a3a3] focus:border-[var(--border-strong)] focus:ring-1 focus:ring-[#d4d4d4]"
-              />
-              <span className="mt-1 block text-xs text-[var(--muted)]">最大16文字</span>
             </label>
 
             <button
